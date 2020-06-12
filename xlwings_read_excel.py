@@ -44,17 +44,49 @@ import xlwings as xw
 # 淡蓝   = 37
 # 淡紫   = 39
 
+# 获取 App
 app = xw.App(visible=True, add_book=False)
-
+# 设置 App
 app.display_alerts = False  # 关闭一些提示信息，可以加快运行速度。 默认为 True。
 app.screen_updating = True  # 更新显示工作表的内容。默认为 True。关闭它也可以提升运行速度。
 
-# book = app.books.open('D:\\Users\\ximing.wei\\Desktop\\库表详情.xlsx')
-book = xw.Book('D:\\Users\\ximing.wei\\Desktop\\库表详情.xlsx')
+# 获取 Excel 文档
+# excel = app.books.open('D:\\Users\\ximing.wei\\Desktop\\库表详情.xlsx')
+excel = xw.Book('D:\\Users\\ximing.wei\\Desktop\\库表详情.xlsx')
+# 创建 Excel 文档
+# excel = xw.books.add()
 
-sheet = book.sheets['Python 练习']
+sheets_name = []
+sheet_add_name = 'Python 练习'
+# 获取 Excel 所有分页
+sheets = excel.sheets
+# 获取分页数量
+sheets_lens = len(sheets)
+# 获取 Excel 分页名称
+for i in range(sheets_lens):
+    sheets_name.append(sheets[i].name)
+# 添加分页
+if sheet_add_name not in sheets_name:
+    sheets.add(sheet_add_name, after=sheets[sheets_lens - 1])
 
-sheet.range('A1:D8').api.merge()
+# 使用 sheet_add_name 分页
+sheet_name = sheets[sheet_add_name]
+
+# 向 sheet_add_name 分页中加入数据
+sheet_range = sheet_name.range
+
+sheet_range_a1 = sheet_range('A1')
+sheet_range_a1.value = 'sublime'
+
+sheet_range_a1.color = (255, 153, 255)  # 设置背景色
+font_style = sheet_range_a1.api.Font.FontStyle = "加粗倾斜"  # 设置字体 加粗倾斜
+print(font_style)
+underline = sheet_range_a1.api.Font.Underline = 2  # 设置字体 下划线
+print(underline)
+
+sheet_range('A1:D8').api.merge()  # 合并单元格
+line_style = sheet_range('A1:D8').api.Borders.LineStyle = 1  # 设置 全框线
+print(line_style)
 
 '''工作簿'''
 # wb = app.books.add()                   # 新建工作簿。
@@ -174,6 +206,6 @@ sheet.range('A1:D8').api.merge()
 # my_values = sht_1.range('a2：d4').options(ndim=2).value  # 读取二维的数据
 # sht_2.range('a1').value = my_values
 
-# wb.save()
+excel.save()
 # wb.close()
 app.quit()
