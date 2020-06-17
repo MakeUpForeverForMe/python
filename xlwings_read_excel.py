@@ -70,23 +70,23 @@ if sheet_add_name not in sheets_name:
     sheets.add(sheet_add_name, after=sheets[sheets_lens - 1])
 
 # 使用 sheet_add_name 分页
-sheet_name = sheets[sheet_add_name]
+# sheet_name = sheets[sheet_add_name]
 
 # 向 sheet_add_name 分页中加入数据
-sheet_range = sheet_name.range
-
-a1 = sheet_range('A1')
-a1.value = 'sublime'
-
-a1.color = (255, 153, 255)  # 设置背景色
-font_style = a1.api.Font.FontStyle = "加粗倾斜"  # 设置字体 加粗倾斜
-print(font_style)
-underline = a1.api.Font.Underline = 2  # 设置字体 下划线
-print(underline)
-
-sheet_range('A1:D8').api.merge()  # 合并单元格
-line_style = sheet_range('A1:D8').api.Borders.LineStyle = 1  # 设置 全框线
-print(line_style)
+# sheet_range = sheet_name.range
+#
+# a1 = sheet_range('A1')
+# a1.value = 'sublime'
+#
+# a1.color = (255, 153, 255)  # 设置背景色
+# font_style = a1.api.Font.FontStyle = "加粗倾斜"  # 设置字体 加粗倾斜
+# print(font_style)
+# underline = a1.api.Font.Underline = 2  # 设置字体 下划线
+# print(underline)
+#
+# sheet_range('A1:D8').api.merge()  # 合并单元格
+# line_style = sheet_range('A1:D8').api.Borders.LineStyle = 1  # 设置 全框线
+# print(line_style)
 
 sheet_name = sheets['databases']
 
