@@ -39,6 +39,17 @@
 #         print(filename)
 
 
-ss = '    '
+# ss = '    '
+# print(ss.replace(' ', 'a'))
 
-print(ss.replace(' ', 'a'))
+
+import os
+
+''' 获取当前目录 '''
+base_dir = os.path.abspath(os.path.join(os.getcwd(), "."))
+print(f'{base_dir}/python_xlwings')
+# print(os.getcwd())
+# print(os.path.abspath(os.path.dirname(__file__)))
+# print(os.path.abspath(os.path.join(os.getcwd(), ".")))
+''' 获取上级目录 '''
+# print(os.path.abspath(os.path.join(os.getcwd(), "../..")))

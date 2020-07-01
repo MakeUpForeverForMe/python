@@ -1,6 +1,7 @@
 import xlwings as xw
+import os
 
-# 颜色索引：
+''' 颜色索引 '''
 # 无色   = -4142
 # 自动   = -4105
 # 黑色   = 1
@@ -44,30 +45,35 @@ import xlwings as xw
 # 淡蓝   = 37
 # 淡紫   = 39
 
-# 获取 App
-app = xw.App(visible=True, add_book=False)
-# 设置 App
-app.display_alerts = False  # 关闭一些提示信息，可以加快运行速度。 默认为 True。
-app.screen_updating = True  # 更新显示工作表的内容。默认为 True。关闭它也可以提升运行速度。
+''' 获取当前目录 '''
+base_dir = os.path.abspath(os.path.join(os.getcwd(), "."))
+
+''' 获取 App '''
+# app = xw.App(visible=True, add_book=False)
+
+''' 设置 App '''
+# app.display_alerts = False  # 关闭一些提示信息，可以加快运行速度。 默认为 True
+# app.screen_updating = True  # 更新显示工作表的内容。默认为 True。关闭它也可以提升运行速度
 
 # 获取 Excel 文档
-# excel = app.books.open('D:\\Users\\ximing.wei\\Desktop\\code\\python\\python_xlwings\\python_xlwings.xlsx')
-excel = xw.Book('D:\\Users\\ximing.wei\\Desktop\\code\\python\\python_xlwings\\python_xlwings.xlsx')
+# excel = app.books.open(f'{base_dir}/python_xlwings.xlsx')
+excel = xw.Book(f'{base_dir}/python_xlwings.xlsx')
 # 创建 Excel 文档
 # excel = xw.books.add()
 
-sheets_name = []
-sheet_add_name = 'Python 练习'
+# sheets_name = []
+# sheet_add_name = 'Python 练习'
 # 获取 Excel 所有分页
 sheets = excel.sheets
 # 获取分页数量
 sheets_lens = len(sheets)
+print(sheets_lens)
 # 获取 Excel 分页名称
-for i in range(sheets_lens):
-    sheets_name.append(sheets[i].name)
+# for i in range(sheets_lens):
+#     sheets_name.append(sheets[i].name)
 # 添加分页
-if sheet_add_name not in sheets_name:
-    sheets.add(sheet_add_name, after=sheets[sheets_lens - 1])
+# if sheet_add_name not in sheets_name:
+#     sheets.add(sheet_add_name, after=sheets[sheets_lens - 1])
 
 # 使用 sheet_add_name 分页
 # sheet_name = sheets[sheet_add_name]
@@ -90,12 +96,12 @@ if sheet_add_name not in sheets_name:
 
 # sheet_name = sheets['databases']
 # sheet_name = sheets['tables']
-sheet_name = sheets[sheet_add_name]
+# sheet_name = sheets[sheet_add_name]
 
-cell = sheet_name.used_range.last_cell
-rows = cell.row
-columns = cell.column
-print(rows, columns)
+# cell = sheet_name.used_range.last_cell
+# rows = cell.row
+# columns = cell.column
+# print(rows, columns)
 
 '''工作簿'''
 # wb = app.books.add()                   # 新建工作簿。
@@ -215,7 +221,7 @@ print(rows, columns)
 # my_values = sht_1.range('a2：d4').options(ndim=2).value  # 读取二维的数据
 # sht_2.range('a1').value = my_values
 
-excel.save()
-excel.close()
+# excel.save()
+# excel.close()
 # wb.close()
-app.quit()
+# app.quit()
