@@ -51,8 +51,8 @@ app.display_alerts = False  # 关闭一些提示信息，可以加快运行速�
 app.screen_updating = True  # 更新显示工作表的内容。默认为 True。关闭它也可以提升运行速度。
 
 # 获取 Excel 文档
-# excel = app.books.open('D:\\Users\\ximing.wei\\Desktop\\库表详情.xlsx')
-excel = xw.Book('D:\\Users\\ximing.wei\\Desktop\\库表详情.xlsx')
+# excel = app.books.open('D:\\Users\\ximing.wei\\Desktop\\code\\python\\python_xlwings\\python_xlwings.xlsx')
+excel = xw.Book('D:\\Users\\ximing.wei\\Desktop\\code\\python\\python_xlwings\\python_xlwings.xlsx')
 # 创建 Excel 文档
 # excel = xw.books.add()
 
@@ -88,7 +88,9 @@ if sheet_add_name not in sheets_name:
 # line_style = sheet_range('A1:D8').api.Borders.LineStyle = 1  # 设置 全框线
 # print(line_style)
 
-sheet_name = sheets['databases']
+# sheet_name = sheets['databases']
+# sheet_name = sheets['tables']
+sheet_name = sheets[sheet_add_name]
 
 cell = sheet_name.used_range.last_cell
 rows = cell.row
@@ -214,5 +216,6 @@ print(rows, columns)
 # sht_2.range('a1').value = my_values
 
 excel.save()
+excel.close()
 # wb.close()
 app.quit()
