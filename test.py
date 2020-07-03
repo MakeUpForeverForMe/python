@@ -47,9 +47,26 @@ import os
 
 ''' 获取当前目录 '''
 base_dir = os.path.abspath(os.path.join(os.getcwd(), "."))
-print(f'{base_dir}/python_xlwings')
+print(f'{base_dir}')
+
+''' 获取目录下的所有子文件及子文件夹 '''
+# for dirs in os.walk(base_dir):
+#     print(dirs)
+
+''' 获取目录下的所有文件及文件夹 '''
+# for dirs in os.listdir(base_dir):
+#     print(dirs)
+
+# print(f'{base_dir}/python_xlwings')
 # print(os.getcwd())
 # print(os.path.abspath(os.path.dirname(__file__)))
-# print(os.path.abspath(os.path.join(os.getcwd(), ".")))
+# print(os.path.abspath(os.path.join(os.getcwd(), ".")))  # 主用
 ''' 获取上级目录 '''
-# print(os.path.abspath(os.path.join(os.getcwd(), "../..")))
+# print(os.path.abspath(os.path.join(os.getcwd(), "../..")))  # 主用
+
+# import xlwings as xw
+# import pandas as pd
+# import numpy as np
+
+# df = pd.DataFrame(np.random.rand(10, 4), columns=['a', 'b', 'c', 'd'])
+# xw.view(df)

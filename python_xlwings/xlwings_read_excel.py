@@ -45,7 +45,7 @@ import os
 # 淡蓝   = 37
 # 淡紫   = 39
 
-''' 获取当前目录 '''
+''' 获取 当前目录 '''
 base_dir = os.path.abspath(os.path.join(os.getcwd(), "."))
 
 ''' 获取 App '''
@@ -55,68 +55,54 @@ base_dir = os.path.abspath(os.path.join(os.getcwd(), "."))
 # app.display_alerts = False  # 关闭一些提示信息，可以加快运行速度。 默认为 True
 # app.screen_updating = True  # 更新显示工作表的内容。默认为 True。关闭它也可以提升运行速度
 
-''' 工作簿 '''
-# wb = app.books.add()                # 新建工作簿
-# wb = app.books.open(r'file_path')   # 打开现有的工作簿
-# wb = app.books.active               # 获取当前活动的工作簿
-
-''' 创建 Excel 文档 '''
-# excel = xw.books.add()
-
-''' 获取 Excel 文档 '''
+''' 获取 文档 '''
 # excel = app.books.open(f'{base_dir}/python_xlwings.xlsx')
 excel = xw.Book(f'{base_dir}/python_xlwings.xlsx')
 
-''' 获取 Excel 所有分页 '''
+''' 获取 所有分页 '''
 sheets = excel.sheets
 
-''' 根据分页数量获取各分页名称 '''
-sheets_name = []  # 创建一个列表用于存储分页名称
-for i in range(len(sheets)):
-    sheets_name.append(sheets[i].name)
+''' 根据 分页索引 获取 分页名称 '''
+# sheets_name = []  # 创建一个列表用于存储分页名称
+# for i in range(len(sheets)):
+#     sheets_name.append(sheets[i].name)
 # print(sheets_name)  # ['databases', 'tables', 'Python 练习']
 
-
-''' 添加分页 '''
+''' 添加 分页 '''
 sheet_add_name = 'Python 练习'
-if sheet_add_name not in sheets_name:
-    sheets.add(sheet_add_name, after=sheets_name[-1])
+# if sheet_add_name not in sheets_name:
+#     sheets.add(sheet_add_name, after=sheets_name[-1])
 
-''' 工作表 '''
-# sht = wb.sheets.active                          # 获取当前活动的工作表
-# sht = wb.sheets[0]                              # 按索引获取工作表
-# sht = wb.sheets['Sheet1']                       # 按表名获取工作表
-# sht = wb.sheets.add()                           # 新建工作表，默认新建的放在最前面。
-# sht = wb.sheets.add('新建工作表', after=sht)     # 新建工作表，放在sht工作表后面。
-
-''' 引用 sheet_add_name 工作表 '''
+''' 引用 工作表 '''
 sheet_name = sheets[sheet_add_name]
 
-''' 读取单元格 '''
-# b3 = sht.range('b3')
-# 获取 b3 中的值
-# v = b3.value
-# 也可以根据行列号读取
-# b3_value = sht.range(3, 2).value
-# 读取一段区间内的值
-# a1_c4_value = sht.range('a1:c4').options(ndim=2).value  # 加上 option 读取二维的数据
-# a1_c4_value = sht.range((1, 1), (4, 3)).options(ndim=2).value  # 和上面读取的内容一样。
-
-""" 写入 就是把值赋值给读取的单元格就可以了"""
-# sht.range(3, 2).value = 'b3'
-
-''' 获取 sheet_add_name 工作表工作区域 '''
+''' 获取 工作表 工作区域 '''
 sheet_range = sheet_name.range
 
-''' 向单元格中写入数据 '''
+''' 读取 单元格 '''
 a1 = sheet_range('A1')
-a1.value = 'sublime'
 
-# a1.color = (255, 153, 255)  # 设置背景色
-# font_style = a1.api.Font.FontStyle = "加粗倾斜"  # 设置字体 加粗倾斜
-# print(font_style)
-# underline = a1.api.Font.Underline = 2  # 设置字体 下划线
+''' 获取 单元格数据 '''
+# print(a1.value)
+# print(sheet_range('A1:B5').value)
+
+''' 写入 单元格数据 '''
+# a1.value = 'sublime'
+
+''' 设置 单元格 '''
+# a1.color = 255, 153, 255            # 设置单元格的填充颜色
+# a1.api.Font.ColorIndex = 3          # 设置字体的颜色，具体颜色索引见最上方
+# a1.api.Font.Bold = True             # 设置为粗体。
+# a1.api.Font.FontStyle = '加粗'      # 设置为粗体
+# a1.api.Font.FontStyle = '倾斜'      # 设置为斜体
+# a1.api.Font.FontStyle = '加粗倾斜'  # 设置为加粗斜体
+# a1.api.Font.Underline = 2           # 设置字体 下划线 1：无，2：有
+# a1.api.HorizontalAlignment = -4108  # -4108 水平居中。 -4131 靠左，-4152 靠右
+# a1.api.VerticalAlignment = -4108    # -4108 垂直居中（默认）。 -4160 靠上，-4107 靠下， -4130 自动换行对齐
+# a1.api.NumberFormat = "0.00"        # 设置单元格的数字格式
+
 # print(underline)
+
 
 # sheet_range('A1:D8').api.merge()  # 合并单元格
 # line_style = sheet_range('A1:D8').api.Borders.LineStyle = 1  # 设置 全框线
@@ -132,20 +118,10 @@ a1.value = 'sublime'
 # print(rows, columns)
 
 
-
-"""设置单元格大小"""
+""" 设置单元格大小 """
 # sht.autofit()                     # 自动调整单元格大小。注：此方法是在单元格写入内容后，再使用，才有效。
 # sht.range(1, 4).column_width = 5  # 设置第4列 列宽。（1,4）为第1行第4列的单元格
 # sht.range(1, 4).row_height = 20   # 设置第1行 行高
-
-"""设置单元格 字体格式"""
-# b3.color = 255, 200, 255              # 设置单元格的填充颜色
-# b3.api.Font.ColorIndex = 3            # 设置字体的颜色，具体颜色索引见下方。
-# b3.api.Font.Size = 24                 # 设置字体的大小。
-# b3.api.Font.Bold = True               # 设置为粗体。
-# b3.api.HorizontalAlignment = -4108    # -4108 水平居中。 -4131 靠左，-4152 靠右。
-# b3.api.VerticalAlignment = -4130      # -4108 垂直居中（默认）。 -4160 靠上，-4107 靠下， -4130 自动换行对齐。
-# b3.api.NumberFormat = "0.00"          # 设置单元格的数字格式。
 
 """设置边框"""
 # Borders(9) 底部边框，LineStyle = 1 直线。
