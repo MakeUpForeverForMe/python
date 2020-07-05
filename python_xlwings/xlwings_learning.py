@@ -119,11 +119,11 @@ a1 = sheet_range('A1')
 
 ''' 插入 一行 '''
 # sheet.api.Rows(1).Insert()  # 会在第1行插入一行，原来的第1行下移
-''' 插入 一列 '''
-# sheet.api.Columns(1).Insert()  # 会在第1列插入一列，原来的第1列右移。(也可以用列的字母表示)
 ''' 删除 一行 '''
 # sheet.api.Rows(1).Delete()  # 删除第1行
 # a1.api.EntireRow.Delete()  # 会删除 a1 单元格所在的行
+''' 插入 一列 '''
+# sheet.api.Columns(1).Insert()  # 会在第1列插入一列，原来的第1列右移。(也可以用列的字母表示)
 ''' 删除 一列 '''
 # sheet.api.Columns(1).Delete()  # 删除第1列
 # a1.api.EntireColumn.Delete()  # 会删除 a1 单元格所在的列
@@ -133,10 +133,6 @@ a1 = sheet_range('A1')
 # sheet.autofit()                     # 自动调整单元格大小。注：此方法是在单元格写入内容后，再使用，才有效。
 # sheet.range(1, 4).column_width = 5  # 设置第4列 列宽。（1,4）为第1行第4列的单元格
 # sheet.range(1, 4).row_height = 20   # 设置第1行 行高
-
-
-# line_style = sheet_range('A1:D8').api.Borders.LineStyle = 1  # 设置 全框线
-# print(line_style)
 
 
 ''' 设置 单元格边框 '''
@@ -154,6 +150,10 @@ b2d4 = sheet_range('b2:d4')
 # 7：粗实线
 # 8：小虚线
 # 9：双实线
+
+''' Borders 设置全框线 '''
+# b2d4.api.Borders.LineStyle = 1
+# b2d4.api.Borders.Weight = 1  # 不建议如此操作
 
 ''' Borders(1) 单元格所有左边框 '''
 # b2d4.api.Borders(1).LineStyle = 1
