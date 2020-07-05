@@ -49,18 +49,18 @@ import os
 base_dir = os.path.abspath(os.path.join(os.getcwd(), "."))
 
 ''' 获取 App '''
-# app = xw.App(visible=True, add_book=False)  # add_book 参数为是否生成一个新的工作表,默认True
-
-''' 设置 App '''
-# app.display_alerts = False  # 关闭一些提示信息，可以加快运行速度。 默认为 True
-# app.screen_updating = False  # 更新显示工作表的内容。默认为 True。关闭它也可以提升运行速度
+app = xw.App(add_book=False)  # visible决定App是否可见（对象不存在时设置为True），add_book 参数为是否生成一个新的工作表,默认True
 
 ''' 获取 文档 '''
 # excel = app.books.open(f'{base_dir}/python_xlwings.xlsx')
 excel = xw.Book(f'{base_dir}/python_xlwings.xlsx')
 
 ''' 通过打开的 Excel 文档获取 应用程序 '''
-app = excel.app
+# app = excel.app
+
+''' 设置 App '''
+app.display_alerts = False  # 关闭一些提示信息，可以加快运行速度。 默认为 True
+app.screen_updating = True  # 关掉屏幕刷新。默认为 True。关闭它也可以提升运行速度。运行脚本结束后，改回 True
 
 ''' 获取 所有分页 '''
 sheets = excel.sheets
@@ -247,7 +247,7 @@ b2d4 = sheet_range('b2:d4')
 ''' 保存 Excel 文档 '''
 excel.save()
 ''' 关闭 Excel 文档 '''
-# excel.close()
+excel.close()
 ''' 退出 应用程序 '''
-# app.quit()
+app.quit()
 # app.kill()
