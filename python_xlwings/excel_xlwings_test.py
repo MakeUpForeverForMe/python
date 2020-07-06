@@ -9,9 +9,6 @@ app = excel.app
 app.display_alerts = False
 app.screen_updating = False
 
-
-
-
 ''' 关闭 '''
 excel.close()
 app.quit()

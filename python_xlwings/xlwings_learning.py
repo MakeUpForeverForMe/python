@@ -49,14 +49,14 @@ import os
 base_dir = os.path.abspath(os.path.join(os.getcwd(), "."))
 
 ''' 获取 App '''
-app = xw.App(add_book=False)  # visible决定App是否可见（对象不存在时设置为True），add_book 参数为是否生成一个新的工作表,默认True
+# app = xw.App(add_book=False)  # visible决定App是否可见（对象不存在时设置为True），add_book 参数为是否生成一个新的工作表,默认True
 
 ''' 获取 文档 '''
 # excel = app.books.open(f'{base_dir}/python_xlwings.xlsx')
 excel = xw.Book(f'{base_dir}/python_xlwings.xlsx')
 
 ''' 通过打开的 Excel 文档获取 应用程序 '''
-# app = excel.app
+app = excel.app
 
 ''' 设置 App '''
 app.display_alerts = False  # 关闭一些提示信息，可以加快运行速度。 默认为 True
@@ -83,7 +83,8 @@ sheet = sheets[sheet_add_name]
 sheet_range = sheet.range
 
 ''' 选定 单元格 '''
-a1 = sheet_range('A1')
+a1 = sheet_range('a1')
+b2d4 = sheet_range('b2:d4')
 
 ''' 获取 单元格数据 '''
 # print(a1.value)
@@ -136,8 +137,6 @@ a1 = sheet_range('A1')
 
 
 ''' 设置 单元格边框 '''
-b2d4 = sheet_range('b2:d4')
-
 # Borders（边框类型）最多12种
 # LineStyle（线型，最多10种）值说明：
 # 0：透明
