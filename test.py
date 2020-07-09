@@ -43,11 +43,11 @@
 # print(ss.replace(' ', 'a'))
 
 
-import os
+# import os
 
 ''' 获取当前目录 '''
-base_dir = os.path.abspath(os.path.join(os.getcwd(), "."))
-print(f'{base_dir}')
+# base_dir = os.path.abspath(os.path.join(os.getcwd(), "."))
+# print(f'{base_dir}')
 
 ''' 获取目录下的所有子文件及子文件夹 '''
 # for dirs in os.walk(base_dir):
@@ -70,3 +70,17 @@ print(f'{base_dir}')
 
 # df = pd.DataFrame(np.random.rand(10, 4), columns=['a', 'b', 'c', 'd'])
 # xw.view(df)
+
+
+# -*- coding:UTF-8 -*-
+import sqlparse
+
+sql = "CREATE TABLE IF NOT EXISTS `dim_new.dim_encrypt_info`( `dim_type` string COMMENT '数据类型', `dim_encrypt` string COMMENT '加密字段', `dim_decrypt` string COMMENT '明文字段', `create_time` timestamp COMMENT '创建时间（yyyy—MM—dd HH:mm:ss）', `update_time` timestamp COMMENT '更新时间（yyyy—MM—dd HH:mm:ss）' ) COMMENT '加密信息表' PARTITIONED BY (`product_id` string COMMENT '产品编号') STORED AS PARQUET;"
+# 1.分割SQL
+stmts = sqlparse.split(sql)
+for stmt in stmts:
+    # 2.format格式化
+    print(sqlparse.format(stmt, reindent=True, keyword_case="upper"))
+    # 3.解析SQL
+    stmt_parsed = sqlparse.parse(stmt)
+    print(stmt_parsed[0].tokens)

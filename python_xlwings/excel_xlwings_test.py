@@ -21,7 +21,11 @@ with open(f'{base_dir}/ods_new_s.hql', encoding='utf-8') as file:
             continue
         lines.append(line)
 
-print(lines)
+for line in lines:
+    print(line)
+    print(line.index('('), line.index(')'))
+    for index, column in enumerate(line.split(' ')):
+        print(index, column)
 
 ''' 打开文档 '''
 # excel = xw.Book(f'{base_dir}/python_xlwings.xlsx')
