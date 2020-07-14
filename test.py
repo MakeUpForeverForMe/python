@@ -48,6 +48,7 @@
 ''' 获取当前目录 '''
 # base_dir = os.path.abspath(os.path.join(os.getcwd(), "."))
 # print(f'{base_dir}')
+import re
 
 ''' 获取目录下的所有子文件及子文件夹 '''
 # for dirs in os.walk(base_dir):
@@ -73,14 +74,54 @@
 
 
 # -*- coding:UTF-8 -*-
-import sqlparse
+# import sqlparse
 
-sql = "CREATE TABLE IF NOT EXISTS `dim_new.dim_encrypt_info`( `dim_type` string COMMENT '数据类型', `dim_encrypt` string COMMENT '加密字段', `dim_decrypt` string COMMENT '明文字段', `create_time` timestamp COMMENT '创建时间（yyyy—MM—dd HH:mm:ss）', `update_time` timestamp COMMENT '更新时间（yyyy—MM—dd HH:mm:ss）' ) COMMENT '加密信息表' PARTITIONED BY (`product_id` string COMMENT '产品编号') STORED AS PARQUET;"
+# sql = "CREATE TABLE IF NOT EXISTS `dim_new.dim_encrypt_info`(\
+# `dim_type`                      string        COMMENT '数据类型',\
+# `dim_encrypt`                   string        COMMENT '加密字段',\
+# `dim_decrypt`                   string        COMMENT '明文字段',\
+# `create_time`                   timestamp     COMMENT '创建时间（yyyy—MM—dd HH:mm:ss）',\
+# `update_time`                   timestamp     COMMENT '更新时间（yyyy—MM—dd HH:mm:ss）'\
+# ) COMMENT '加密信息表'\
+# PARTITIONED BY (`product_id` string COMMENT ')产 品,编号', aa int)\
+# STORED AS PARQUET;"
+
 # 1.分割SQL
-stmts = sqlparse.split(sql)
-for stmt in stmts:
-    # 2.format格式化
-    print(sqlparse.format(stmt, reindent=True, keyword_case="upper"))
-    # 3.解析SQL
-    stmt_parsed = sqlparse.parse(stmt)
-    print(stmt_parsed[0].tokens)
+# stmts = sqlparse.split(sql)
+# for stmt in stmts:
+#     # 2.format格式化
+#     # print(sqlparse.format(stmt, reindent=True, keyword_case="upper"))
+#     # 3.解析SQL
+#     stmt_parsed = sqlparse.parse(stmt)[0].tokens
+#     for token in stmt_parsed:
+#         print(type(token), token.ttype, token.value)
+
+sql_str = "CREATE TABLE IF NOT EXISTS `dim_new.dim_encrypt_info`(\n" \
+          "  `dim_type`    string    COMMENT '数据类型',\n" \
+          "  `dim_encrypt` string    COMMENT '加密字段',\n" \
+          "  `dim_decrypt` string    COMMENT '明文字段',\n" \
+          "  `create_time` timestamp COMMENT '创建时间（yyyy—MM—dd HH:mm:ss）',\n" \
+          "  `update_time` timestamp COMMENT '更新时间（yyyy—MM—dd HH:mm:ss）'\n" \
+          ") COMMENT '加密信息表'\n" \
+          "PARTITIONED BY (`product_id` string COMMENT '产品编号')\n" \
+          "STORED AS PARQUET;"
+
+print(sql_str)
+
+q = re.sub(r"/\*[^*]*\*+(?:[^*/][^*]*\*+)*/", "", sql_str)
+# print(q)
+# for line in q.splitlines():
+#     if not re.match("^\s*(--|#)", line):
+#         print(line)
+lines = [line for line in q.splitlines() if not re.match("^\s*(--|#)", line)]
+print(lines)
+# switch = {
+#     "a": lambda x: x * 2,
+#     "b": lambda x: x * 3,
+#     "c": lambda x: x ** x
+# }
+#
+# try:
+#     print(switch["c"](6))
+# except KeyError as e:
+#     pass
