@@ -1,6 +1,8 @@
 import os
 import re
 
+import sqlparse
+
 base_dir = os.path.abspath(os.path.join(os.getcwd(), "."))
 
 ''' 获取文件并解析 '''
@@ -55,18 +57,21 @@ def get_column_key(string: str):
 
 
 for line in lines:
+    for token in sqlparse.parse(line)[0].tokens:
+        # if token.ttype is None and token.value != 'PARTITIONED':
+            print(type(token), token.ttype, token.value)
     # print(line)
     # index_1 = line.index('(')
     # table_name = line[:index_1]
     # other = line[index_1 + 1:].strip()
     # print(table_name)
     # print(other)
-    find_db_tb_name = line.find('(')
-    get_column_key(line[find_db_tb_name + 1:].strip())
-    db_tb_name = line[0:find_db_tb_name].split(' ')[-1].strip('`').split('.')
-    data['db_name'] = db_tb_name[0]
-    data['tb_name'] = db_tb_name[1]
-    print(data)
+    # find_db_tb_name = line.find('(')
+    # get_column_key(line[find_db_tb_name + 1:].strip())
+    # db_tb_name = line[0:find_db_tb_name].split(' ')[-1].strip('`').split('.')
+    # data['db_name'] = db_tb_name[0]
+    # data['tb_name'] = db_tb_name[1]
+    # print(data)
     # for index, column in enumerate(line.split(' ')):
     #     print(index, column)
 
