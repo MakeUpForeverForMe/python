@@ -96,25 +96,25 @@ import re
 #     for token in stmt_parsed:
 #         print(type(token), token.ttype, token.value)
 
-sql_str = "CREATE TABLE IF NOT EXISTS `dim_new.dim_encrypt_info`(\n" \
-          "  `dim_type`    string    COMMENT '数据类型',\n" \
-          "  `dim_encrypt` string    COMMENT '加密字段',\n" \
-          "  `dim_decrypt` string    COMMENT '明文字段',\n" \
-          "  `create_time` timestamp COMMENT '创建时间（yyyy—MM—dd HH:mm:ss）',\n" \
-          "  `update_time` timestamp COMMENT '更新时间（yyyy—MM—dd HH:mm:ss）'\n" \
-          ") COMMENT '加密信息表'\n" \
-          "PARTITIONED BY (`product_id` string COMMENT '产品编号')\n" \
-          "STORED AS PARQUET;"
-
-print(sql_str)
-
-q = re.sub(r"/\*[^*]*\*+(?:[^*/][^*]*\*+)*/", "", sql_str)
+# sql_str = "CREATE TABLE IF NOT EXISTS `dim_new.dim_encrypt_info`(\n" \
+#           "  `dim_type`    string    COMMENT '数据类型',\n" \
+#           "  `dim_encrypt` string    COMMENT '加密字段',\n" \
+#           "  `dim_decrypt` string    COMMENT '明文字段',\n" \
+#           "  `create_time` timestamp COMMENT '创建时间（yyyy—MM—dd HH:mm:ss）',\n" \
+#           "  `update_time` timestamp COMMENT '更新时间（yyyy—MM—dd HH:mm:ss）'\n" \
+#           ") COMMENT '加密信息表'\n" \
+#           "PARTITIONED BY (`product_id` string COMMENT '产品编号')\n" \
+#           "STORED AS PARQUET;"
+#
+# print(sql_str)
+#
+# q = re.sub(r"/\*[^*]*\*+(?:[^*/][^*]*\*+)*/", "", sql_str)
 # print(q)
 # for line in q.splitlines():
 #     if not re.match("^\s*(--|#)", line):
 #         print(line)
-lines = [line for line in q.splitlines() if not re.match("^\s*(--|#)", line)]
-print(lines)
+# lines = [line for line in q.splitlines() if not re.match("^\s*(--|#)", line)]
+# print(lines)
 # switch = {
 #     "a": lambda x: x * 2,
 #     "b": lambda x: x * 3,
@@ -125,3 +125,11 @@ print(lines)
 #     print(switch["c"](6))
 # except KeyError as e:
 #     pass
+
+
+import sqlparse
+sql = 'delete from someschema'
+
+parsed = sqlparse.parse(sql)
+result = sqlparse.sql.Statement(parsed[0].tokens)
+print(result.get_type())

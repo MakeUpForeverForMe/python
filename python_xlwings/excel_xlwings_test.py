@@ -2,6 +2,8 @@ import os
 import re
 
 import sqlparse
+from sqlparse.sql import Parenthesis, Identifier, TokenList
+from sqlparse.tokens import Whitespace, Keyword, Token, Punctuation
 
 base_dir = os.path.abspath(os.path.join(os.getcwd(), "."))
 
@@ -26,40 +28,43 @@ with open(f'{base_dir}/ods_new_s.hql', encoding='utf-8') as file:
 
 data = {}
 
-
-def get_column_key(string: str):
-    if string.find('STORED AS') != -1:
-        stored_as = string.find('STORED AS')
-        get_column_key(string[0:stored_as])
-        data['stored_as'] = string[stored_as:].split(' ')[-1].lower()
-    elif string.find('PARTITIONED BY') != -1:
-        partitioned_by_index = string.find('PARTITIONED BY')
-        get_column_key(string[0:partitioned_by_index])
-        partitioned_by = string[partitioned_by_index:]
-        print(partitioned_by)
-        l_index = partitioned_by.find('(')
-        r_index = partitioned_by.rfind(')')
-        partitioned_by = partitioned_by[l_index + 1: r_index]
-        partitioned_by = partitioned_by
-        print(partitioned_by)
-        # data['partition_by'] = [split[0], split[1]]
-        # print(data['partition_by'])
-    # elif comment:
-    #     print(string)
-    #     print(string.index('('), string.rindex(')'))
-    #     print(string[0:string.index(comment.group())])
-    #     print(string.index(comment.group()), comment.group())
-    #     get_column_key(string[0:string.rindex(comment.group())])
-    # elif create:
-    #     print(string[0:string.index(create.group())])
-    #     print(string.index(create.group()), create.group())
-    #     get_column_key(string[0:string.index(create.group())])
-
-
 for line in lines:
     for token in sqlparse.parse(line)[0].tokens:
-        # if token.ttype is None and token.value != 'PARTITIONED':
-            print(type(token), token.ttype, token.value)
+        if token.is_whitespace or token.is_keyword or token.ttype is Punctuation:  # 过滤空行
+            continue
+
+        # print(type(token), token.ttype, token)
+
+        if isinstance(token, Identifier) and token.value != 'PARTITIONED':  # 获取库名、表名
+            if not re.search(r'STORED AS', token.value, re.I):
+                data['db_name'] = token.get_parent_name()
+                data['tb_name'] = token.get_name()
+            else:
+                partition_stored = re.split(r'STORED AS', token.value, re.I)
+                data['stored_as'] = partition_stored[1].strip()
+                print('````````', partition_stored[0])
+
+        if isinstance(token, Parenthesis):  # 获取字段名
+            print('-------------------------------------------')
+            for identifier in sqlparse.sql.IdentifierList(token).get_identifiers():
+                print(identifier)
+            # sqlparse.sql.IdentifierList(token).get_identifiers()
+            # print(sqlparse.sql.IdentifierList(token).get_identifiers())
+            columns = []
+            # for sublist in token.flatten():
+            #     if sublist.ttype is Whitespace or sublist.ttype is Punctuation or re.match(r'COMMENT', sublist.value,
+            #                                                                                re.I):
+            #         continue
+            #     # sqlparse.sql.TokenList
+            #     print(sublist)
+            #     # columns += {}
+            #     print(type(sublist), sublist.ttype, sublist)
+            print('--------', token)
+
+        if token.ttype is Token.Literal.String.Single:  # 获取表注释
+            data['tb_comment'] = token.value.strip('\'')
+
+    print(data)
     # print(line)
     # index_1 = line.index('(')
     # table_name = line[:index_1]
