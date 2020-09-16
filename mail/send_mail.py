@@ -18,6 +18,7 @@ message = sys.argv[3]
 
 send_host = '10.80.0.133'
 send_user = 'DataCenter-Alert@services.weshreholdings.com'
+send_pass = ''
 receivers = 'chao.guo@weshareholdings.com', \
             'jian.tan@weshareholdings.com', \
             'yunan.huang@weshareholdings.com', \
@@ -35,6 +36,7 @@ if not config.has_section('sender'):  # 检查指定节点是否存在，返回T
     config.add_section('sender')
     config.set('sender', 'host', send_host)
     config.set('sender', 'user', send_user)
+    config.set('sender', 'pass', send_pass)
 
 if not config.has_section('receiver'):
     print("Error：请在配置文件中配置节点 [receiver]")
@@ -57,7 +59,7 @@ msg['Subject'] = Header('{}'.format(email_subject), 'utf-8')  # 邮件的主题�
 
 try:
     # server = smtplib.SMTP(config.get('sender', 'host'), 25)  # 25 为 SMTP 端口号
-    server = smtplib.SMTP_SSL(config.get('sender', 'host'), 465)
+    server = smtplib.SMTP_SSL(config.get('sender', 'host'), 465 if str(send_user).endswith('qq.com') else 25)
     server.login(send_user, config.get('sender', 'pass'))
     server.sendmail(send_user, receivers, msg.as_string())  # 发件人、收件人、消息
     server.quit()  # 退出对话
