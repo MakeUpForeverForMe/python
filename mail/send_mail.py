@@ -57,12 +57,12 @@ msg['From'] = Header(send_user)
 msg['To'] = Header(','.join(receivers))
 msg['Subject'] = Header('{}'.format(email_subject), 'utf-8')  # 邮件的主题，也可以说是标题
 
-try:
-    # server = smtplib.SMTP(config.get('sender', 'host'), 25)  # 25 为 SMTP 端口号
-    server = smtplib.SMTP_SSL(config.get('sender', 'host'), 465 if str(send_user).endswith('qq.com') else 25)
+server = smtplib.SMTP(config.get('sender', 'host'), 25)  # 25 为 SMTP 端口号
+# server = smtplib.SMTP_SSL(config.get('sender', 'host'), 465 if str(send_user).endswith('qq.com') else 25)
+
+if str(send_user).endswith('qq.com'):
     server.login(send_user, config.get('sender', 'pass'))
-    server.sendmail(send_user, receivers, msg.as_string())  # 发件人、收件人、消息
-    server.quit()  # 退出对话
-    server.close()  # 关闭连接
-except smtplib.SMTPException:
-    print("Error: 无法发送邮件")
+
+server.sendmail(send_user, receivers, msg.as_string())  # 发件人、收件人、消息
+server.quit()  # 退出对话
+server.close()  # 关闭连接
