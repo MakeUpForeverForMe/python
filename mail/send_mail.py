@@ -7,15 +7,7 @@ from email.mime.text import MIMEText
 from email.header import Header
 from configparser import ConfigParser
 
-""" 获取参数 """
-if len(sys.argv) - 1 != 3:
-    print("Error：指定配置文件、消息内容、主题", sys.argv)
-    sys.exit(1)
-
-config_filePath = sys.argv[1]
-email_subject = sys.argv[2]
-message = sys.argv[3]
-
+""" 属性设置 """
 send_host = '10.80.0.133'
 send_user = 'DataCenter-Alert@services.weshreholdings.com'
 receivers = 'chao.guo@weshareholdings.com', \
@@ -24,6 +16,15 @@ receivers = 'chao.guo@weshareholdings.com', \
             'huan.liu@weshareholdings.com', \
             'yuheng.wang@weshareholdings.com', \
             'ximing.wei@weshareholdings.com'
+
+""" 获取参数 """
+if len(sys.argv) - 1 != 3:
+    print("Error：指定配置文件、消息内容、主题", sys.argv)
+    sys.exit(1)
+
+config_filePath = sys.argv[1]
+email_subject = sys.argv[2]
+message = sys.argv[3]
 
 """ 解析配置文件 """
 config = ConfigParser(allow_no_value=True)  # 创建对象
@@ -51,10 +52,10 @@ if receivers_ != '':
     receivers = tuple(receivers_.split(','))
 
 """ 设置邮件 """
-msg = MIMEText(message, 'plain', 'utf-8')  # 邮件内容
+msg = MIMEText(message, _charset='utf-8')  # 根据邮件内容，获取邮件
 msg['From'] = Header(send_user)
 msg['To'] = Header(','.join(receivers))
-msg['Subject'] = Header('{}'.format(email_subject), 'utf-8')  # 邮件的主题，也可以说是标题
+msg['Subject'] = Header('{}'.format(email_subject), 'utf-8')
 
 """ 发送邮件 """
 server = smtplib.SMTP(config.get('sender', 'host'), 25)  # 25 为 SMTP 端口号
