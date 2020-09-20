@@ -10,12 +10,14 @@ from configparser import ConfigParser
 """ 属性设置 """
 send_host = '10.80.0.133'
 send_user = 'DataCenter-Alert@services.weshreholdings.com'
-receivers = 'chao.guo@weshareholdings.com', \
-            'jian.tan@weshareholdings.com', \
-            'yunan.huang@weshareholdings.com', \
-            'huan.liu@weshareholdings.com', \
-            'yuheng.wang@weshareholdings.com', \
-            'ximing.wei@weshareholdings.com'
+receivers = [
+    'chao.guo@weshareholdings.com',
+    'jian.tan@weshareholdings.com',
+    'yunan.huang@weshareholdings.com',
+    'huan.liu@weshareholdings.com',
+    'yuheng.wang@weshareholdings.com',
+    'ximing.wei@weshareholdings.com'
+]
 
 """ 获取参数 """
 if len(sys.argv) - 1 != 3:
@@ -47,11 +49,9 @@ if not config.has_option('receiver', 'receivers'):
 
 send_user = config.get('sender', 'user')
 receivers_ = str(config.get('receiver', 'receivers'))
+receivers = receivers_.split(',') if receivers_ != '' else receivers
 
-if receivers_ != '':
-    receivers = tuple(receivers_.split(','))
-
-""" 设置邮件 """
+""" 设置邮件消息 """
 msg = MIMEText(message, _charset='utf-8')  # 根据邮件内容，获取邮件
 msg['From'] = Header(send_user)
 msg['To'] = Header(','.join(receivers))
