@@ -1,69 +1,109 @@
 #!/usr/bin/python
 # -*- coding: UTF-8 -*-
-
-import smtplib
+import os
+import re
 import sys
+from configparser import ConfigParser
 from email.mime.text import MIMEText
 from email.header import Header
-from configparser import ConfigParser
+from smtplib import SMTP
 
-""" 属性设置 """
-send_host = '10.80.0.133'
-send_user = 'DataCenter-Alert@services.weshreholdings.com'
-receivers = [
-    'chao.guo@weshareholdings.com',
-    'jian.tan@weshareholdings.com',
-    'yunan.huang@weshareholdings.com',
-    'huan.liu@weshareholdings.com',
-    'yuheng.wang@weshareholdings.com',
-    'ximing.wei@weshareholdings.com'
-]
 
-""" 获取参数 """
-if len(sys.argv) - 1 != 3:
-    print("Error：指定配置文件、消息内容、主题", sys.argv)
-    sys.exit(1)
+class Mail(object):
+    def __init__(self, path):
+        self.str_join = ','
+        self.sender_name = 'sender'
+        self.host_name = 'host'
+        self.user_name = 'user'
+        self.pass_name = 'pass'
+        self.receiver_name = 'receiver'
+        self.receivers_name = 'receivers'
+        self.sender_mail = 'sender_mail'
+        self.receivers_mail = 'receivers_mail'
+        self.config = ConfigParser(allow_no_value=True)  # 创建对象
+        self.config.read(path, encoding='utf-8')
+        self.server = None
 
-config_filePath = sys.argv[1]
-email_subject = sys.argv[2]
-message = sys.argv[3]
+    def sender(self, host, user, password):
+        if not self.config.has_section(self.sender_name):  # 检查指定节点是否存在，如果不存在则创建
+            self.config.add_section(self.sender_name)
 
-""" 解析配置文件 """
-config = ConfigParser(allow_no_value=True)  # 创建对象
-if len(config.read(config_filePath, encoding='utf-8')) == 0:  # 读取配置文件，如果配置文件不存在则创建
-    print(f"Error：没有找到对应的配置文件 {config_filePath}")
-    sys.exit(1)
+        if not self.config.has_option(self.sender_name, self.host_name):
+            self.config.set(self.sender_name, self.host_name, host)
 
-if not config.has_section('sender'):  # 检查指定节点是否存在，返回True或False
-    config.add_section('sender')
-    config.set('sender', 'host', send_host)
-    config.set('sender', 'user', send_user)
+        if not self.config.has_option(self.sender_name, self.user_name):
+            self.config.set(self.sender_name, self.user_name, user)
 
-if not config.has_section('receiver'):
-    print("Error：请在配置文件中配置节点 [receiver]")
-    sys.exit(1)
+        if not self.config.has_option(self.sender_name, self.pass_name):
+            self.config.set(self.sender_name, self.pass_name, password)
 
-if not config.has_option('receiver', 'receivers'):
-    print("Error：请在配置文件中配置 receiver 节点的属性 receivers")
-    sys.exit(1)
+        __mail__ = self.config.get(self.sender_name, self.user_name)
+        self.config.set(self.sender_name, self.sender_mail, re.findall(r'<(.*?)>', __mail__)[0])
 
-send_user = config.get('sender', 'user')
-receivers_ = str(config.get('receiver', 'receivers'))
-receivers = receivers_.split(',') if receivers_ != '' else receivers
+    def receivers(self, receiver_all):
+        if not self.config.has_section(self.receiver_name):  # 检查指定节点是否存在，如果不存在则创建
+            self.config.add_section(self.receiver_name)
 
-""" 设置邮件消息 """
-msg = MIMEText(message, _charset='utf-8')  # 根据邮件内容，获取邮件
-msg['From'] = Header(send_user)
-msg['To'] = Header(','.join(receivers))
-msg['Subject'] = Header('{}'.format(email_subject), 'utf-8')
+        if not self.config.has_option(self.receiver_name, self.receivers_name):
+            self.config.set(self.receiver_name, self.receivers_name, receiver_all)
+            self.config.set(self.receiver_name, self.receivers_mail, re.findall(r'<(.*?)>', receiver_all))
 
-""" 发送邮件 """
-server = smtplib.SMTP(config.get('sender', 'host'), 25)  # 25 为 SMTP 端口号
-# server = smtplib.SMTP_SSL(config.get('sender', 'host'), 465 if str(send_user).endswith('qq.com') else 25)
+        __mails__ = self.config.get(self.receiver_name, self.receivers_name)
+        self.config.set(self.receiver_name, self.receivers_mail, self.str_join.join(re.findall(r'<(.*?)>', __mails__)))
 
-if str(send_user).endswith('qq.com'):
-    server.login(send_user, config.get('sender', 'pass'))
+    def send_mail(self, sub, msg):
+        """ 设置邮件消息 """
+        mail_msg = MIMEText(message, 'plain', _charset='utf-8')  # 根据邮件内容，获取邮件
+        mail_msg['From'] = Header(self.config.get(self.sender_name, self.user_name), charset='utf-8')
+        mail_msg['To'] = Header(self.config.get(self.receiver_name, self.receivers_name), charset='utf-8')
+        mail_msg['Subject'] = Header('{}'.format(sub), charset='utf-8')
 
-server.sendmail(send_user, receivers, msg.as_string())  # 发件人、收件人、消息
-server.quit()  # 退出对话
-server.close()  # 关闭连接
+        print(mail_msg)
+        print(self.config.items(self.sender_name))
+        print(self.config.items(self.receiver_name))
+
+        self.server = SMTP(self.config.get(self.sender_name, self.host_name), 25)  # 25 为 SMTP 端口号
+
+        if self.config.get(self.sender_name, self.sender_mail).endswith('qq.com'):
+            self.server.login(self.config.get(self.sender_name, self.sender_mail),
+                              self.config.get(self.sender_name, self.pass_name))
+
+        self.server.sendmail(self.config.get(self.sender_name, self.user_name),
+                             self.config.get(self.receiver_name, self.receivers_mail).split(self.str_join),
+                             mail_msg.as_string())  # 发件人、收件人、消息
+
+    def close(self):
+        self.server.quit()  # 退出对话
+        self.server.close()  # 关闭连接
+
+
+if __name__ == '__main__':
+    """ 获取参数 """
+    if len(sys.argv[1:]) != 3:
+        print("Error：请指定：配置文件、消息内容、主题", sys.argv)
+        sys.exit(1)
+
+    if not os.path.exists(sys.argv[1]):
+        print("Error：配置文件 未找到！")
+        sys.exit(1)
+
+    """ 属性设置 """
+    ini_path = sys.argv[1]
+    subject = sys.argv[2]
+    message = sys.argv[3]
+
+    send_host = '10.80.0.133'
+    send_user = '告警邮箱<DataCenter-Alert@services.weshreholdings.com>'
+    send_pass = ''
+    receivers = '郭超<chao.guo@weshareholdings.com>,' \
+                '檀剑<jian.tan@weshareholdings.com>,' \
+                '黄育楠<yunan.huang@weshareholdings.com>,' \
+                '刘焕<huan.liu@weshareholdings.com>,' \
+                '王禹衡<yuheng.wang@weshareholdings.com>,' \
+                '魏喜明<ximing.wei@weshareholdings.com>'
+
+    mail = Mail(ini_path)
+    mail.sender(send_host, send_user, send_pass)
+    mail.receivers(receivers)
+    mail.send_mail(subject, message)
+    mail.close()

@@ -127,9 +127,12 @@ import re
 #     pass
 
 
-import sqlparse
-sql = 'delete from someschema'
+# import sqlparse
+# sql = 'delete from someschema'
+#
+# parsed = sqlparse.parse(sql)
+# result = sqlparse.sql.Statement(parsed[0].tokens)
+# print(result.get_type())
 
-parsed = sqlparse.parse(sql)
-result = sqlparse.sql.Statement(parsed[0].tokens)
-print(result.get_type())
+name, addr = ['a', 'b']
+print(name, addr)
