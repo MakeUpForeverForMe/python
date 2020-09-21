@@ -11,7 +11,9 @@ from smtplib import SMTP
 
 class Mail(object):
     def __init__(self, path):
+        self.charset = 'utf-8'
         self.str_join = ','
+        self.end_with_mail = 'qq.com'
         self.sender_name = 'sender'
         self.host_name = 'host'
         self.user_name = 'user'
@@ -21,7 +23,7 @@ class Mail(object):
         self.sender_mail = 'sender_mail'
         self.receivers_mail = 'receivers_mail'
         self.config = ConfigParser(allow_no_value=True)  # 创建对象
-        self.config.read(path, encoding='utf-8')
+        self.config.read(path, encoding=self.charset)
         self.server = None
 
     def sender(self, host, user, password):
@@ -53,10 +55,10 @@ class Mail(object):
 
     def send_mail(self, sub, msg):
         """ 设置邮件消息 """
-        mail_msg = MIMEText(message, 'plain', _charset='utf-8')  # 根据邮件内容，获取邮件
-        mail_msg['From'] = Header(self.config.get(self.sender_name, self.user_name), charset='utf-8')
-        mail_msg['To'] = Header(self.config.get(self.receiver_name, self.receivers_name), charset='utf-8')
-        mail_msg['Subject'] = Header('{}'.format(sub), charset='utf-8')
+        mail_msg = MIMEText(message, 'plain', _charset=self.charset)  # 根据邮件内容，获取邮件
+        mail_msg['From'] = Header(self.config.get(self.sender_name, self.user_name), charset=self.charset)
+        mail_msg['To'] = Header(self.config.get(self.receiver_name, self.receivers_name), charset=self.charset)
+        mail_msg['Subject'] = Header('{}'.format(sub), charset=self.charset)
 
         print(mail_msg)
         print(self.config.items(self.sender_name))
@@ -64,7 +66,7 @@ class Mail(object):
 
         self.server = SMTP(self.config.get(self.sender_name, self.host_name), 25)  # 25 为 SMTP 端口号
 
-        if self.config.get(self.sender_name, self.sender_mail).endswith('qq.com'):
+        if self.config.get(self.sender_name, self.sender_mail).endswith(self.end_with_mail):
             self.server.login(self.config.get(self.sender_name, self.sender_mail),
                               self.config.get(self.sender_name, self.pass_name))
 
