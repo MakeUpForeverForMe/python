@@ -134,5 +134,5 @@ import re
 # result = sqlparse.sql.Statement(parsed[0].tokens)
 # print(result.get_type())
 
-name, addr = ['a', 'b']
+name, addr = ['a', '哈哈哈']
 print(name, addr)

@@ -22,7 +22,7 @@ class Mail(object):
         self.receivers_name = 'receivers'
         self.sender_mail = 'sender_mail'
         self.receivers_mail = 'receivers_mail'
-        self.config = ConfigParser(allow_no_value=True)  # 创建对象
+        self.config = ConfigParser(allow_no_value=True)  # 创建 ConfigParser 解析对象
         self.config.read(path, encoding=self.charset)
         self.server = None
 
