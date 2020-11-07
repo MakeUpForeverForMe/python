@@ -1,0 +1,12 @@
+spider/__pycache__/__init__.cpython-37.pyc
+spider/__pycache__/html_downloader.cpython-37.pyc
+spider/__pycache__/html_outputer.cpython-37.pyc
+spider/__pycache__/html_parser.cpython-37.pyc
+spider/__pycache__/url_manager.cpython-37.pyc
+.idea/misc.xml
+.idea/modules.xml
+.idea/python.iml
+.idea/vcs.xml
+.idea/workspace.xml
+.idea/codeStyles/codeStyleConfig.xml
+.idea/codeStyles/Project.xml
