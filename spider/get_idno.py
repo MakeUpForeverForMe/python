@@ -1,5 +1,4 @@
 # -*- coding: UTF-8 -*-
-import sys
 
 import requests
 from lxml import etree
@@ -28,13 +27,11 @@ class Government(object):
         parse_html = etree.HTML(html)
         a_list = parse_html.xpath('//a[@class="artitlelist"]')
         for a in a_list:
-            print(a.attrib)
-            sys.exit(0)
+            # print(a.attrib)  # 打印标签内容
             # title=a.xpath('./@title')[0]
             title = a.get('title')
             if re.findall('.*以上行政区划代码', title, re.S):
-                two_false_link = 'http://www.mca.gov.cn' + a.get('href')
-                return two_false_link
+                return 'http://www.mca.gov.cn' + a.get('href')
 
     # 提取真实二级页面链接（返回数据）
     def get_true_link(self):
@@ -46,21 +43,27 @@ class Government(object):
         real_link = pattern.findall(html)[0]
 
         # 实现增量爬取
+        # 先抓数据
+        self.get_data(real_link)
+        # 把real_link插入到version表中
+        ins = 'insert into version value (%s)'
+        self.cursor.execute(ins, [real_link])
+        self.db.commit()
         # 到version表中查询real_link
         # 有：数据最新 没有：抓数据
-        sel = 'select * from version where link="{}"'.format(real_link)
-        self.cursor.execute(sel)
-
-        # 链接已存在（不需要抓取数据）
-        if self.cursor.fetchall():
-            print('数据已是最新')
-        else:
-            # 先抓数据
-            self.get_data(real_link)
-            # 把real_link插入到version表中
-            ins = 'insert into version value (%s)'
-            self.cursor.execute(ins, [real_link])
-            self.db.commit()
+        # sel = 'select * from version where link="{}"'.format(real_link)
+        # self.cursor.execute(sel)
+        #
+        # # 链接已存在（不需要抓取数据）
+        # if self.cursor.fetchall():
+        #     print('数据已是最新')
+        # else:
+        #     # 先抓数据
+        #     self.get_data(real_link)
+        #     # 把real_link插入到version表中
+        #     ins = 'insert into version value (%s)'
+        #     self.cursor.execute(ins, [real_link])
+        #     self.db.commit()
 
     # 真正提取数据函数
     def get_data(self, real_link):
@@ -72,11 +75,12 @@ class Government(object):
         parse_html = etree.HTML(html)
         tr_list = parse_html.xpath('//tr[@height="19"]')
         for tr in tr_list:
-            code = tr.xpath('./td[2]/text()')[0]
+            try:
+                code = tr.xpath('./td[2]/text()')[0]
+            except IndexError:
+                code = tr.xpath('./td[2]//span[@lang="EN-US"]/text()')[0]
             name = tr.xpath('./td[3]/text()')[0]
-            print(name, code)
-        # code: ./td[2]/text()
-        # name: ./td[3]/text()
+            print(code, name)
 
     # 主函数
     def main(self):
