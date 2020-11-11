@@ -1,4 +1,6 @@
 # -*- coding: UTF-8 -*-
+import sys
+
 import requests
 from lxml import etree
 import pymysql
@@ -7,9 +9,11 @@ import re
 
 class Government(object):
     def __init__(self):
-        self.one_url = 'http://www.mca.gov.cn/article/sj/xzqh/2019/'
+        self.one_url = 'http://www.mca.gov.cn/article/sj/xzqh/2020/'
         self.headers = {'User-Agent': 'Mozilla/5.0'}
-        self.db = pymysql.connect('localhost', 'root', '000000', 'government', charset='utf8')
+        self.db = pymysql.connect(
+            'localhost', 'root', '000000', 'government', charset='utf8'
+        )
         self.cursor = self.db.cursor()
 
     # 提取二级页面链接（假链接）- 一定是最新的哪个链接
@@ -24,11 +28,12 @@ class Government(object):
         parse_html = etree.HTML(html)
         a_list = parse_html.xpath('//a[@class="artitlelist"]')
         for a in a_list:
+            print(a.attrib)
+            sys.exit(0)
             # title=a.xpath('./@title')[0]
             title = a.get('title')
             if re.findall('.*以上行政区划代码', title, re.S):
-                two_false_link = 'http://www.mca.gov.cn' + \
-                                 a.get('href')
+                two_false_link = 'http://www.mca.gov.cn' + a.get('href')
                 return two_false_link
 
     # 提取真实二级页面链接（返回数据）
