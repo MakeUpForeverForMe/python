@@ -10,10 +10,11 @@ class Government(object):
     def __init__(self):
         self.one_url = 'http://www.mca.gov.cn/article/sj/xzqh/2020/'
         self.headers = {'User-Agent': 'Mozilla/5.0'}
-        self.db = pymysql.connect(
-            'localhost', 'root', '000000', 'government', charset='utf8'
+        self.connection = pymysql.connect(
+            # 'localhost', 'root', '000000', 'government', charset='utf8'
+            '192.168.18.100', 'root', '000000', 'government', charset='utf8'
         )
-        self.cursor = self.db.cursor()
+        self.cursor = self.connection.cursor()
 
     # 提取二级页面链接（假链接）- 一定是最新的哪个链接
     def get_false_link(self):
@@ -45,25 +46,6 @@ class Government(object):
         # 实现增量爬取
         # 先抓数据
         self.get_data(real_link)
-        # 把real_link插入到version表中
-        ins = 'insert into version value (%s)'
-        self.cursor.execute(ins, [real_link])
-        self.db.commit()
-        # 到version表中查询real_link
-        # 有：数据最新 没有：抓数据
-        # sel = 'select * from version where link="{}"'.format(real_link)
-        # self.cursor.execute(sel)
-        #
-        # # 链接已存在（不需要抓取数据）
-        # if self.cursor.fetchall():
-        #     print('数据已是最新')
-        # else:
-        #     # 先抓数据
-        #     self.get_data(real_link)
-        #     # 把real_link插入到version表中
-        #     ins = 'insert into version value (%s)'
-        #     self.cursor.execute(ins, [real_link])
-        #     self.db.commit()
 
     # 真正提取数据函数
     def get_data(self, real_link):
@@ -74,13 +56,20 @@ class Government(object):
         # 基准xpath: //tr[@height="19"]
         parse_html = etree.HTML(html)
         tr_list = parse_html.xpath('//tr[@height="19"]')
+        id_no_city = []
         for tr in tr_list:
             try:
                 code = tr.xpath('./td[2]/text()')[0]
             except IndexError:
                 code = tr.xpath('./td[2]//span[@lang="EN-US"]/text()')[0]
             name = tr.xpath('./td[3]/text()')[0]
-            print(code, name)
+            id_no_city.append((code, name))
+            # print(code, name)
+        sql = 'insert into idno_city value (%s,%s)'
+        self.cursor.executemany(sql, id_no_city)
+        self.connection.commit()
+        # print(id_no_city)
+        # sys.exit(0)
 
     # 主函数
     def main(self):

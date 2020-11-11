@@ -27,7 +27,8 @@ class Mail(object):
         self.server = None
 
     def sender(self, host, user, password):
-        if not self.config.has_section(self.sender_name):  # 检查指定节点是否存在，如果不存在则创建
+        # 检查指定节点是否存在，如果不存在则创建
+        if not self.config.has_section(self.sender_name):
             self.config.add_section(self.sender_name)
 
         if not self.config.has_option(self.sender_name, self.host_name):
@@ -40,38 +41,48 @@ class Mail(object):
             self.config.set(self.sender_name, self.pass_name, password)
 
         __mail__ = self.config.get(self.sender_name, self.user_name)
-        self.config.set(self.sender_name, self.sender_mail, re.findall(r'<(.*?)>', __mail__)[0])
+        self.config.set(self.sender_name, self.sender_mail,
+                        re.findall(r'<(.*?)>', __mail__)[0])
 
     def receivers(self, receiver_all):
-        if not self.config.has_section(self.receiver_name):  # 检查指定节点是否存在，如果不存在则创建
+        # 检查指定节点是否存在，如果不存在则创建
+        if not self.config.has_section(self.receiver_name):
             self.config.add_section(self.receiver_name)
 
         if not self.config.has_option(self.receiver_name, self.receivers_name):
-            self.config.set(self.receiver_name, self.receivers_name, receiver_all)
-            self.config.set(self.receiver_name, self.receivers_mail, re.findall(r'<(.*?)>', receiver_all))
+            self.config.set(self.receiver_name,
+                            self.receivers_name, receiver_all)
+            self.config.set(self.receiver_name, self.receivers_mail,
+                            re.findall(r'<(.*?)>', receiver_all))
 
         __mails__ = self.config.get(self.receiver_name, self.receivers_name)
-        self.config.set(self.receiver_name, self.receivers_mail, self.str_join.join(re.findall(r'<(.*?)>', __mails__)))
+        self.config.set(self.receiver_name, self.receivers_mail,
+                        self.str_join.join(re.findall(r'<(.*?)>', __mails__)))
 
     def send_mail(self, sub, msg):
         """ 设置邮件消息 """
-        mail_msg = MIMEText(message, 'plain', _charset=self.charset)  # 根据邮件内容，获取邮件
-        mail_msg['From'] = Header(self.config.get(self.sender_name, self.user_name), charset=self.charset)
-        mail_msg['To'] = Header(self.config.get(self.receiver_name, self.receivers_name), charset=self.charset)
+        mail_msg = MIMEText(
+            message, 'plain', _charset=self.charset)  # 根据邮件内容，获取邮件
+        mail_msg['From'] = Header(self.config.get(
+            self.sender_name, self.user_name), charset=self.charset)
+        mail_msg['To'] = Header(self.config.get(
+            self.receiver_name, self.receivers_name), charset=self.charset)
         mail_msg['Subject'] = Header('{}'.format(sub), charset=self.charset)
 
         print(mail_msg)
         print(self.config.items(self.sender_name))
         print(self.config.items(self.receiver_name))
 
-        self.server = SMTP(self.config.get(self.sender_name, self.host_name), 25)  # 25 为 SMTP 端口号
+        self.server = SMTP(self.config.get(
+            self.sender_name, self.host_name), 25)  # 25 为 SMTP 端口号
 
         if self.config.get(self.sender_name, self.sender_mail).endswith(self.end_with_mail):
             self.server.login(self.config.get(self.sender_name, self.sender_mail),
                               self.config.get(self.sender_name, self.pass_name))
 
         self.server.sendmail(self.config.get(self.sender_name, self.user_name),
-                             self.config.get(self.receiver_name, self.receivers_mail).split(self.str_join),
+                             self.config.get(self.receiver_name, self.receivers_mail).split(
+                                 self.str_join),
                              mail_msg.as_string())  # 发件人、收件人、消息
 
     def close(self):
