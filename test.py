@@ -48,6 +48,7 @@
 ''' 获取当前目录 '''
 # base_dir = os.path.abspath(os.path.join(os.getcwd(), "."))
 # print(f'{base_dir}')
+import os
 import re
 
 ''' 获取目录下的所有子文件及子文件夹 '''
@@ -134,5 +135,10 @@ import re
 # result = sqlparse.sql.Statement(parsed[0].tokens)
 # print(result.get_type())
 
-name, addr = ['a', '哈哈哈']
-print(name, addr)
+# name, addr = ['a', '哈哈哈']
+# print(name, addr)
+
+# cmd = 'ls'
+# text_list = os.popen(cmd).readlines()
+# os.system('pwd')
+# print(text_list)
