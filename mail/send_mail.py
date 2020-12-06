@@ -15,10 +15,10 @@ class Mail(object):
     ip = str(os.popen("ifconfig | grep -Po 'inet[ ]\K[^ ]+' | grep -v '127'").readlines()[0]).strip()
 
     prod_send_host = '10.80.0.133'
-    prod_send_user = '告警邮箱<DataCenter-Alert@services.weshreholdings.com>'
+    prod_send_user = '生产告警邮箱<DataCenter-Alert@services.weshreholdings.com>'
 
     test_send_host = '10.83.0.44'
-    test_send_user = '告警邮箱<apb-report@weshareholdings.com.cn>'
+    test_send_user = '测试告警邮箱<DataCenter-Alert-sit@weshreholdings.com.cn>'
 
     default_send_host = ''
     default_send_user = ''
@@ -27,6 +27,9 @@ class Mail(object):
         default_send_host = prod_send_host
         default_send_user = prod_send_user
     elif re.match(r'10.83.*', ip):
+        default_send_host = test_send_host
+        default_send_user = test_send_user
+    else:
         default_send_host = test_send_host
         default_send_user = test_send_user
 
