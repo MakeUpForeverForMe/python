@@ -4,48 +4,46 @@ import os
 import re
 import sys
 from configparser import ConfigParser
-from email.mime.text import MIMEText
 from email.header import Header
+from email.mime.text import MIMEText
 from email.utils import parseaddr, formataddr
 from smtplib import SMTP
 
 
+class Default(object):
+    def __init__(self):
+        """  """
+        """ 判断是哪种操作系统 """
+        self.system = os.name
+        """ 属性设置 """
+        if self.system == 'nt':
+            self.ip = re.findall(r'[\d.]+', str(os.popen('ipconfig | find /i "IPv4 地址"').readlines()[0]))[-1].strip()
+            pass
+        elif self.system == 'posix':
+            self.ip = str(os.popen("ifconfig | grep -Po 'inet[ ]\K[^ ]+' | grep -v '127'").readlines()[0]).strip()
+
+        if re.match(r'10.80.*', self.ip):
+            self.default_send_host = '10.80.0.133'
+            self.default_send_user = '生产告警邮箱<DataCenter-Alert@services.weshreholdings.com>'
+        elif re.match(r'10.83.*', self.ip):
+            self.default_send_host = '10.83.0.44'
+            self.default_send_user = '测试告警邮箱<DataCenter-Alert-sit@weshreholdings.com.cn>'
+        elif re.match(r'10.10.*', self.ip):
+            self.default_send_host = self.test_send_host
+            self.default_send_user = self.test_send_user
+
+        self.default_send_pass = ''
+        self.default_receivers = [
+            '郭超<chao.guo@weshareholdings.com>'
+            '檀剑<jian.tan@weshareholdings.com>'
+            '刘焕<huan.liu@weshareholdings.com>'
+            '魏喜明<ximing.wei@weshareholdings.com>'
+            '王禹衡<yuheng.wang@weshareholdings.com>'
+            '黄育楠<yunan.huang@weshareholdings.com>'
+        ]
+
+
 class Mail(object):
-    """ 属性设置 """
-    ip = str(os.popen("ifconfig | grep -Po 'inet[ ]\K[^ ]+' | grep -v '127'").readlines()[0]).strip()
-
-    prod_send_host = '10.80.0.133'
-    prod_send_user = '生产告警邮箱<DataCenter-Alert@services.weshreholdings.com>'
-
-    test_send_host = '10.83.0.44'
-    test_send_user = '测试告警邮箱<DataCenter-Alert-sit@weshreholdings.com.cn>'
-
-    default_send_host = ''
-    default_send_user = ''
-
-    if re.match(r'10.80.*', ip):
-        default_send_host = prod_send_host
-        default_send_user = prod_send_user
-    elif re.match(r'10.83.*', ip):
-        default_send_host = test_send_host
-        default_send_user = test_send_user
-    else:
-        default_send_host = test_send_host
-        default_send_user = test_send_user
-
-    default_send_pass = ''
-    default_receivers = '郭超<chao.guo@weshareholdings.com>' \
-                        ',' \
-                        '檀剑<jian.tan@weshareholdings.com>' \
-                        ',' \
-                        '刘焕<huan.liu@weshareholdings.com>' \
-                        ',' \
-                        '魏喜明<ximing.wei@weshareholdings.com>' \
-                        ',' \
-                        '王禹衡<yuheng.wang@weshareholdings.com>' \
-                        ',' \
-                        '黄育楠<yunan.huang@weshareholdings.com>'
-
     def __init__(self, path=None):
 
         self.charset = 'utf-8'
@@ -73,7 +71,8 @@ class Mail(object):
 
         return addr_list
 
-    def sender_check(self, host=default_send_host, user=default_send_user, password=default_send_pass):
+    def sender_check(self, host=Default().default_send_host, user=Default().default_send_user,
+                     password=Default().default_send_pass):
         # 检查指定节点是否存在，如果不存在则创建
         if not self.conf.has_section(self.sender):
             self.conf.add_section(self.sender)
@@ -98,17 +97,17 @@ class Mail(object):
     def send_mail(self, sub, msg):
         """ 设置邮件消息 """
         mail_msg = MIMEText(msg, 'plain', _charset=self.charset)  # 根据邮件内容，获取邮件
-        mail_msg['From'] = self.str_split.join(self.__formataddr_list__(self.conf.get(self.sender, self.sender_user)))
-        mail_msg['To'] = self.str_split.join(self.__formataddr_list__(self.conf.get(self.receiver, self.receiver_users)))
+        mail_msg['From'] = self.str_split.join(self.__formataddr_list__(self.conf[self.sender][self.sender_user]))
+        mail_msg['To'] = self.str_split.join(self.__formataddr_list__(self.conf[self.receiver][self.receiver_users]))
         mail_msg['Subject'] = Header('{}'.format(sub), charset=self.charset)
 
         # print(mail_msg.items())
 
-        self.server = SMTP(self.conf.get(self.sender, self.sender_host), 25)  # 25 为 SMTP 端口号
+        self.server = SMTP(self.conf[self.sender][self.sender_host], 25)  # 25 为 SMTP 端口号
 
-        if self.conf.get(self.sender, self.sender_host).endswith(self.end_with_mail):
-            self.server.login(re.findall(r'<(.*?)>', self.conf.get(self.sender, self.sender_user))[0],
-                              self.conf.get(self.sender, self.sender_pass))
+        if self.conf[self.sender][self.sender_host].endswith(self.end_with_mail):
+            self.server.login(self.__formataddr_list__(self.conf[self.sender][self.sender_user]),
+                              self.conf[self.sender][self.sender_pass])
 
         self.server.sendmail(self.conf.get(self.sender, self.sender_user),
                              self.conf.get(self.receiver, self.receiver_users).split(self.str_split),
@@ -138,6 +137,7 @@ if __name__ == '__main__':
     if args_length == 3 and not os.path.exists(sys.argv[1]):
         print("Error：配置文件 未找到！")
         sys.exit(1)
+
 
     mail = Mail(in_path)
     mail.sender_check()
